@@ -1,6 +1,5 @@
 import express from 'express';
 import { readFile, writeFile } from 'fs/promises';
-import path from 'path';
 
 const app = express();
 const PORT = 8000;
@@ -20,7 +19,7 @@ async function loadUsers() {
 }
 
 await loadUsers();
-
+// console.log(users)
 console.log("Hello express");
 
 app.get('/users', (req, res) => {
@@ -72,15 +71,54 @@ app.route('/api/users/:id')
   .get((req, res) => {
     const id = Number(req.params.id);
     const user = users.find((user) => user.id === id);
+    if (!user) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
     return res.json(user);
   })
-  .patch((req, res) => {
-    // edit
-    return res.json({ status: "pending" });
+  .patch(async (req, res) => {
+    const id = Number(req.params.id);
+    const body = req.body;
+    console.log("Request body:", body); // Log the request body
+
+    const userIndex = users.findIndex((user) => user.id === id);
+    if (userIndex === -1) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+
+    // Update the user's data
+    users[userIndex] = { ...users[userIndex], ...body };
+    console.log("Updated users array:", users); // Log the updated users array
+
+    try {
+      await writeFile(new URL('./MOCK_DATA.json', import.meta.url), JSON.stringify(users, null, 2));
+      console.log("Successfully wrote to file"); // Confirm successful write operation
+      return res.json({ status: "done" });
+    } catch (err) {
+      console.error("Error writing to file", err); // Log any error that occurs while writing the file
+      return res.status(500).json({ status: "error", message: "Internal Server Error" });
+    }
   })
-  .delete((req, res) => {
-    // delete
-    return res.json({ status: "pending" });
+  .delete(async (req, res) => {
+    const id = Number(req.params.id);
+    const userIndex = users.findIndex((user) => user.id === id);
+
+    if (userIndex === -1) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+
+    // Remove the user from the array
+    users.splice(userIndex, 1);
+    console.log("Updated users array after deletion:", users); // Log the updated users array
+
+    try {
+      await writeFile(new URL('./MOCK_DATA.json', import.meta.url), JSON.stringify(users, null, 2));
+      console.log("Successfully wrote to file after deletion"); // Confirm successful write operation
+      return res.json({ status: "done" });
+    } catch (err) {
+      console.error("Error writing to file", err); // Log any error that occurs while writing the file
+      return res.status(500).json({ status: "error", message: "Internal Server Error" });
+    }
   });
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
