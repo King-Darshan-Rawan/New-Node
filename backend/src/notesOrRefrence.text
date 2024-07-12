@@ -1,0 +1,14 @@
+..//..coustome headers..//..
+
+
+app.get('/users', (req, res) => {
+  // Your existing code
+
+  // Set headers
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Cache-Control', 'no-cache');
+
+  res.send(html);
+});
+
+..//....//..
