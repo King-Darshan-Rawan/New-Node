@@ -7,6 +7,21 @@ const PORT = 8000;
 // Middleware
 app.use(express.json());
 
+app.use((req,res,next)=>{
+  if(users === 0){
+    console.log("yup")
+    res.json({"status": "over"})
+  }
+  else if("/users"){
+    console.log("sorry")
+    res.json({"status": "please meet again"})
+  }
+
+  console.log("assigned to next");
+  next()
+})
+
+
 let users = [];
 
 async function loadUsers() {
