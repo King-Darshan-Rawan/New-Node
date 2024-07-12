@@ -4,24 +4,8 @@ import { readFile, writeFile } from 'fs/promises';
 const app = express();
 const PORT = 8000;
 
-// Middleware
+
 app.use(express.json());
-
-app.use((req,res,next)=>{
-  if(users === 0){
-    console.log("yup")
-    res.json({"status": "over"})
-  }
-  else if("/users"){
-    console.log("sorry")
-    res.json({"status": "please meet again"})
-  }
-
-  console.log("assigned to next");
-  next()
-})
-
-
 let users = [];
 
 async function loadUsers() {
@@ -34,8 +18,29 @@ async function loadUsers() {
 }
 
 await loadUsers();
+
+// Middleware
+
+app.use((req,res,next)=>{
+  // if(users === 0){
+  //   console.log("yup")
+  //   res.json({"status": "over"})
+  // }
+  // else if("/users"){
+  //   console.log("sorry")
+  //   res.json({"status": "please meet again"})
+  // }
+
+  console.log("assigned to next");
+  next()
+})
+
+ 
+
 // console.log(users)
 console.log("Hello express");
+
+//html response
 
 app.get('/users', (req, res) => {
   const html = `
@@ -55,6 +60,8 @@ app.get('/users', (req, res) => {
     `;
   res.send(html);
 });
+
+//response in json format
 
 app.route('/api/users')
   .get((req, res) => {

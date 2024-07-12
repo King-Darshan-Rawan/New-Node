@@ -7993,11 +7993,12 @@
   },
   {
     "id": 1000,
-    "first_name": "Dallon",
-    "last_name": "Cormode",
-    "email": "dcormoderr@a8.net",
+    "first_name": "Yaksh",
+    "last_name": "Malviya",
+    "email": "darshanmalviya1234@gmail.com",
     "gender": "Male",
-    "job_titel": "Marketing Manager"
+    "job_titel": "Marketing Manager",
+    "job_title": "web_dev"
   },
   {
     "first_name": "Darshan",
@@ -8007,11 +8008,12 @@
     "id": 1001
   },
   {
-    "first_name": "Darshan",
+    "first_name": "Yaksh",
     "last_name": "Malviya",
     "email": "darshanmalviya1234@gmail.com",
     "job_titel": "web_dev",
-    "id": 1002
+    "id": 1002,
+    "job_title": "web_dev"
   },
   {
     "first_name": "Yaksh",
