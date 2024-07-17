@@ -1,39 +1,48 @@
-import express from 'express';
 import { readFile, writeFile } from 'fs/promises';
-import mongoose from 'mongoose'
 import { type } from 'os';
 import { stringify } from 'querystring';
+import express from 'express';
+import mongoose from 'mongoose';
+
 const app = express();
-const PORT = 8000;
+const PORT = 8001; // Changed port to 8001
 app.use(express.json());
 
-//connect database
-mongoose.connect("mongodb://")
+// Connect to the database
+mongoose.connect('mongodb://localhost:27017/StoreData1')
+.then(() => {
+  console.log('DB connected');
+})
+.catch((err) => {
+  console.log('Error', err);
+});
 
-//schema
+// Schema definition
 const userSchema = new mongoose.Schema({
-  firstName:{
+  firstName: {
     type: String,
-    require: true
+    required: true
   },
-  lastName:{
+  lastName: {
     type: String,
-    require: true
+    required: true
   },
-  email:{
+  email: {
     type: String,
-    require: true,
+    required: true,
     unique: true
   },
-  jobTitel :{
-    type:String,
+  jobTitle: {
+    type: String,
   }
-})
+});
 
-const users = mongoose.model("user", userSchema);
+const User = mongoose.model('User', userSchema);
 
-
-
+// Server setup
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 //using data from json file
 // let users = [];
@@ -173,4 +182,4 @@ const users = mongoose.model("user", userSchema);
 //     }
 //   });
 
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+// app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
