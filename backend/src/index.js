@@ -83,7 +83,80 @@ app.post("/api/users", async (req, res) => {
   }
 });
 
+// html format return 
+app.get('/users', async(req, res) => {
+  const allUsers = await User.find({});
+  const html = `
+    <ul>
+    ${allUsers.map((user) => `
+        <div class="user-data">
+            <h2>User Data</h2>
+            <p><strong>ID:</strong> ${user.id}</p>
+            <p><strong>First Name:</strong> ${user.firstName}</p>
+            <p><strong>Last Name:</strong> ${user.lastName}</p>
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>Gender:</strong> ${user.gender}</p>
+            <p><strong>Job Title:</strong> ${user.jobTitle}</p>
+        </div>
+    `).join('')}
+    </ul>
+    `;
+  res.send(html);
+});
+
+
+app.route('/api/users')
+  .get(async(req, res) => {
+    const allUsers = await User.find({}); 
+  if(allUsers === null || allUsers === false){
+    return res.status(400).json({msg: "no data found"})
+  }
+  else{
+    return res.json(allUsers);
+  }
+  })
+  // .post(async (req, res) => {
+  //   const body = req.body;
+  //   console.log("Request body:", body); // Log the request body
+
+  //   if (!body) {
+  //     return res.status(400).json({ status: "error", message: "Invalid request body" });
+  //   }
+
+  //   const newUser = { ...body, id: users.length + 1 };
+  //   users.push(newUser);
+  //   console.log("Updated users array:", users); // Log the updated users array
+
+  //   try {
+  //     await writeFile(new URL('./MOCK_DATA.json', import.meta.url), JSON.stringify(users, null, 2));
+  //     console.log("Successfully wrote to file"); // Confirm successful write operation
+  //     return res.json({ status: "done" });
+  //   } catch (err) {
+  //     console.error("Error writing to file", err); // Log any error that occurs while writing the file
+  //     return res.status(500).json({ status: "error", message: "Internal Server Error" });
+  //   }
+  // });
+
+app.route('/api/users/:id')
+  .get(async(req, res) => {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+    return res.json(user);
+  })
+  .patch(async (req, res) => {
+    await User.findByIdAndUpdate(req.params.id, {lastName: "there we go"});
+    return res.json("success")
+    })
+  .delete(async (req, res) => {
+    await User.findByIdAndDelete(req.params.id)
+    return res.json("success")
+  });
+
+
 // Server setup
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
