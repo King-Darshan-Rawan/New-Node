@@ -9,16 +9,29 @@ const PORT = 8001; // Changed port to 8001
 app.use(express.json());
 
 // Connect to the database
-mongoose.connect('mongodb://localhost:27017/StoreData1', {
+const mongoURI = 'mongodb://localhost:27017/StoreData1';
+
+mongoose.connect(mongoURI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true
+  useUnifiedTopology: true
 })
-.then(() => {
-  console.log('DB connected');
-})
-.catch((err) => {
-  console.log('Error', err);
+  .then(() => {
+    console.log('DB connected');
+  })
+  .catch((err) => {
+    console.log('Initial MongoDB connection error:', err);
+  });
+
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+mongoose.connection.on('connected', () => {
+  console.log('Mongoose connected to MongoDB');
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('Mongoose disconnected from MongoDB');
 });
 
 // Schema definition
@@ -41,8 +54,9 @@ const userSchema = new mongoose.Schema({
   },
   jobTitle: {
     type: String
-  }
-});
+  },
+  
+},{timestamps: true});
 
 const User = mongoose.model('User', userSchema);
 
@@ -64,7 +78,7 @@ app.post("/api/users", async (req, res) => {
     console.log("result", result);
     return res.status(201).json({ msg: "success", user: result });
   } catch (error) {
-    console.error(error);
+    console.error('Error creating user:', error);
     return res.status(500).json({ msg: "Error creating user", error: error.message });
   }
 });
