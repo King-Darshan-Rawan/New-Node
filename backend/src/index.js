@@ -9,7 +9,11 @@ const PORT = 8001; // Changed port to 8001
 app.use(express.json());
 
 // Connect to the database
-mongoose.connect('mongodb://localhost:27017/StoreData1')
+mongoose.connect('mongodb://localhost:27017/StoreData1', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true
+})
 .then(() => {
   console.log('DB connected');
 })
@@ -32,12 +36,38 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  gender: {
+    type: String
+  },
   jobTitle: {
-    type: String,
+    type: String
   }
 });
 
 const User = mongoose.model('User', userSchema);
+
+app.post("/api/users", async (req, res) => {
+  const { firstName, lastName, email, gender, jobTitle } = req.body;
+  
+  if (!firstName || !lastName || !email) {
+    return res.status(400).json({ msg: "First name, last name, and email are required" });
+  }
+  
+  try {
+    const result = await User.create({
+      firstName,
+      lastName,
+      email,
+      gender,
+      jobTitle
+    });
+    console.log("result", result);
+    return res.status(201).json({ msg: "success", user: result });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Error creating user", error: error.message });
+  }
+});
 
 // Server setup
 app.listen(PORT, () => {
